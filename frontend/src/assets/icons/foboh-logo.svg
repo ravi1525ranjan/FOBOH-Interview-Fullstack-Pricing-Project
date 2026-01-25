@@ -1,0 +1,25 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <!-- Rounded square background similar to FOBOH favicon -->
+  <rect x="12" y="12" width="232" height="232" rx="52" ry="52" fill="#18A874"/>
+  
+  <!-- Stylized F shape (rounded, modern, closer to favicon) -->
+  <path d="M92 60 
+           H172 
+           C182 60 188 66 188 76 
+           V80 
+           C188 90 182 96 172 96 
+           H120 
+           V120 
+           H160 
+           C170 120 176 126 176 136 
+           V140 
+           C176 150 170 156 160 156 
+           H120 
+           V192 
+           C120 202 114 208 104 208 
+           H100 
+           C90 208 84 202 84 192 
+           V72 
+           C84 64 88 60 92 60 Z" 
+        fill="white"/>
+</svg>

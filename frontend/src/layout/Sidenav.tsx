@@ -1,3 +1,4 @@
+import { NavLink } from "react-router-dom";
 export default function Sidenav() {
   return (
     <aside className="sidenav">
@@ -6,21 +7,47 @@ export default function Sidenav() {
         <span className="brand-name">FOBOH</span>
       </div>
       <nav className="sidenav-menu">
-        <a href="#" className="sidenav-link">
-          <img src="/src/assets/icons/dashboard.svg" className="icon" alt="Dashboard" />
-Dashboard
+        <NavLink
+          to="/dashboard"
+          className={({ isActive }) =>
+            isActive ? "sidenav-link active" : "sidenav-link"
+          }
+        >
+          <img
+            src="/src/assets/icons/dashboard.svg"
+            className="icon"
+            alt="Dashboard"
+          />
+          Dashboard
+        </NavLink>
 
-        </a>
-        <a href="#" className="sidenav-link active">
-         <img src="/src/assets/icons/pricing.svg" className="icon" alt="Pricing" />
-Pricing
+        <NavLink
+          to="/pricing"
+          className={({ isActive }) =>
+            isActive ? "sidenav-link active" : "sidenav-link"
+          }
+        >
+          <img
+            src="/src/assets/icons/pricing.svg"
+            className="icon"
+            alt="Pricing"
+          />
+          Pricing
+        </NavLink>
 
-        </a>
-        <a href="#" className="sidenav-link">
-       <img src="/src/assets/icons/settings.svg" className="icon" alt="Settings" />
-Settings
-
-        </a>
+        <NavLink
+          to="/settings"
+          className={({ isActive }) =>
+            isActive ? "sidenav-link active" : "sidenav-link"
+          }
+        >
+          <img
+            src="/src/assets/icons/settings.svg"
+            className="icon"
+            alt="Settings"
+          />
+          Settings
+        </NavLink>
       </nav>
     </aside>
   );
