@@ -1,217 +1,244 @@
 import { useEffect, useMemo, useState } from "react";
-import type {
-  Product,
-  PricingProfile,
-  AdjustmentType,
-  IncrementType,
-} from "../types";
-import { fetchProducts, fetchProfiles, createProfile } from "../api/api";
-import { calcNewPrice } from "../utils/price";
-import ProductTable from "../components/ProductTable";
-
-type SelectionMode = "one" | "many" | "all";
-
-type Row = {
-  product: Product;
-  basedOnPrice: number;
-  newPrice: number;
-};
+import type { Product, AdjustmentType, IncrementType } from "../types";
 
 type Props = {
-  rows: Row[];
+  products: Product[];
 };
 
-export default function PricePreview({ rows }: Props) {
- const [products, setProducts] = useState<Product[]>([]);
-  const [profiles, setProfiles] = useState<PricingProfile[]>([]);
-  const [selected, setSelected] = useState<string[]>([]);
-  const [mode, setMode] = useState<SelectionMode>("many");
-//   const [search, setSearch] = useState("");
-//   const [filters, setFilters] = useState({
-//     category: "",
-//     subCategory: "",
-//     segment: "",
-//     brand: "",
-//   });
+type RowState = {
+  adjustment: number;
+};
 
-  const [basedOnProfileId, setBasedOnProfileId] = useState<string | null>(
-    "global",
-  );
+export default function PricePreview({ products }: Props) {
+  const [basedOn, setBasedOn] = useState<"global">("global");
   const [adjustmentType, setAdjustmentType] = useState<AdjustmentType>("fixed");
   const [incrementType, setIncrementType] = useState<IncrementType>("decrease");
-//   const [adjustmentValue, setAdjustmentValue] = useState<number>(0);
 
-//   const [profileName, setProfileName] = useState("New Pricing Profile");
-//   const [previewRows, setPreviewRows] = useState<
-//     { product: Product; basedOnPrice: number; newPrice: number }[]
-//   >([]);
+  // Row-level adjustment values
+  const [rowState, setRowState] = useState<Record<string, { adjustment: number | "" }>>({});
 
-  useEffect(() => {
-    fetchProducts().then(setProducts);
-    fetchProfiles().then(setProfiles);
-  }, []);
-
-//   const filteredProducts = useMemo(() => {
-//     const q = search.trim().toLowerCase();
-//     return products.filter((p) => {
-//       const matchesQ =
-//         !q ||
-//         p.title.toLowerCase().includes(q) ||
-//         p.sku.toLowerCase().includes(q);
-
-//       const matchesCategory =
-//         !filters.category || p.category === filters.category;
-//       const matchesSub =
-//         !filters.subCategory || p.subCategory === filters.subCategory;
-//       const matchesSeg = !filters.segment || p.segment === filters.segment;
-//       const matchesBrand = !filters.brand || p.brand === filters.brand;
-
-//       return (
-//         matchesQ && matchesCategory && matchesSub && matchesSeg && matchesBrand
-//       );
-//     });
-//   }, [products, search, filters]);
-
-//   const selectableProducts = mode === "all" ? products : filteredProducts;
-
-//   const toggle = (id: string) => {
-//     setSelected((prev) =>
-//       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-//     );
-//   };
-
-//   const toggleAll = () => {
-//     const allIds = selectableProducts.map((p) => p.id);
-//     const allSelected = allIds.every((id) => selected.includes(id));
-//     setSelected(allSelected ? [] : allIds);
-//   };
+  // Multi-select rows
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   useEffect(() => {
-    if (mode === "all") {
-      setSelected(products.map((p) => p.id));
+    // Initialize row state when products change
+    const initial: Record<string, RowState> = {};
+    products.forEach((p) => {
+      initial[p.id] = { adjustment: 0 };
+    });
+    setRowState(initial);
+    setSelectedRows(products.map((p) => p.id));
+  }, [products]);
+
+  const toggleRow = (id: string) => {
+    setSelectedRows((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
+  };
+
+  const toggleAll = () => {
+    if (selectedRows.length === products.length) {
+      setSelectedRows([]);
     } else {
-      setSelected([]);
+      setSelectedRows(products.map((p) => p.id));
     }
-  }, [mode, products]);
+  };
 
-//   const basedOnPrice = useMemo(() => {
-//     // currently only global base price exists
-//     return (product: Product) => product.basePrice;
-//   }, []);
+const calcNewPrice = (base: number, adjustment: number): number => {
+  if (base <= 0 || adjustment <= 0) return Number(base.toFixed(2));
 
-//   const calculatePreview = () => {
-//     const rows = selectableProducts
-//       .filter((p) => selected.includes(p.id))
-//       .map((product) => {
-//         const base = basedOnPrice(product);
-//         const newPrice = calcNewPrice(
-//           base,
-//           adjustmentType,
-//           incrementType,
-//           adjustmentValue,
-//         );
-//         return { product, basedOnPrice: base, newPrice };
-//       });
+  const delta =
+    adjustmentType === "fixed"
+      ? adjustment
+      : (adjustment / 100) * base;
 
-//     setPreviewRows(rows);
-//   };
+  const price =
+    incrementType === "increase"
+      ? base + delta
+      : base - delta;
 
-//   const applyProfile = async () => {
-//     const items = previewRows.map((r) => ({
-//       productId: r.product.id,
-//       adjustmentType,
-//       incrementType,
-//       adjustmentValue,
-//     }));
+  return Math.max(0, Number(price.toFixed(2)));
+};
 
-//     const payload = {
-//       name: profileName,
-//       basedOnProfileId,
-//       items,
-//     };
 
-//     const created = await createProfile(payload);
-//     setProfiles((prev) => [...prev, created]);
-//     alert("Pricing profile created successfully!");
-//   };
+  const rows = useMemo(() => {
+    return products.map((product) => {
+      const base = product.globalWholesalePrice ?? 0;
+     const rawAdjustment = rowState[product.id]?.adjustment;
+const adjustment =
+  typeof rawAdjustment === "number" ? rawAdjustment : 0;
+
+      const newPrice = calcNewPrice(base, adjustment);
+
+      return {
+        product,
+        base,
+        adjustment,
+        newPrice,
+      };
+    });
+  }, [products, rowState, adjustmentType, incrementType]);
+
+  if (!products.length) return null;
+
+  const getAdjustmentPrefix = () => {
+  if (adjustmentType === "fixed" && incrementType === "increase") return "+$";
+  if (adjustmentType === "fixed" && incrementType === "decrease") return "-$";
+  if (adjustmentType === "dynamic" && incrementType === "increase") return "+%";
+  return "-%";
+};
+
 
   return (
     <div className="card">
-      <h2>Preview</h2>
-        <div className="row">
-          <label>Based On</label>
-          <select
-            value={basedOnProfileId ?? ""}
-            onChange={(e) => setBasedOnProfileId(e.target.value || null)}
-          >
-            {profiles.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </div>
-                <div className="row">
-          <label>Adjustment Type</label>
-          <div className="radioRow">
-            <label>
-              <input
-                type="radio"
-                checked={adjustmentType === "fixed"}
-                onChange={() => setAdjustmentType("fixed")}
-              />
-              Fixed ($)
-            </label>
-            <label>
-              <input
-                type="radio"
-                checked={adjustmentType === "dynamic"}
-                onChange={() => setAdjustmentType("dynamic")}
-              />
-              Dynamic (%)
-            </label>
-          </div>
-        </div>
+      <h2>Price Preview</h2>
 
-        <div className="row">
-          <label>Increment</label>
-          <div className="radioRow">
-            <label>
-              <input
-                type="radio"
-                checked={incrementType === "increase"}
-                onChange={() => setIncrementType("increase")}
-              />
-              Increase
-            </label>
-            <label>
-              <input
-                type="radio"
-                checked={incrementType === "decrease"}
-                onChange={() => setIncrementType("decrease")}
-              />
-              Decrease
-            </label>
-          </div>
+      {/* Based On */}
+      <div className="row">
+        <label>Based On</label>
+        <select value={basedOn} onChange={() => setBasedOn("global")}>
+          <option value="global">Global Wholesale Price</option>
+        </select>
+      </div>
+
+      {/* Adjustment Type */}
+      <div className="row">
+        <label>Set Price Adjustment Mode</label>
+        <div className="radioRow">
+          <label>
+            <input
+              type="radio"
+              checked={adjustmentType === "fixed"}
+              onChange={() => setAdjustmentType("fixed")}
+            />
+            Fixed ($)
+          </label>
+          <label>
+            <input
+              type="radio"
+              checked={adjustmentType === "dynamic"}
+              onChange={() => setAdjustmentType("dynamic")}
+            />
+            Dynamic (%)
+          </label>
         </div>
+      </div>
+
+      {/* Increment */}
+      <div className="row">
+        <label>Set Price Adjustment Increment</label>
+        <div className="radioRow">
+          <label>
+            <input
+              type="radio"
+              checked={incrementType === "increase"}
+              onChange={() => setIncrementType("increase")}
+            />
+            Increase +
+          </label>
+          <label>
+            <input
+              type="radio"
+              checked={incrementType === "decrease"}
+              onChange={() => setIncrementType("decrease")}
+            />
+            Decrease -
+          </label>
+        </div>
+      </div>
+
+      {/* Table */}
       <table className="table">
         <thead>
           <tr>
-            <th>Title</th>
-            <th>Based On</th>
+            <th>
+              <input
+                type="checkbox"
+                checked={selectedRows.length === products.length}
+                onChange={toggleAll}
+              />
+            </th>
+            <th>Product Title</th>
+            <th>SKU Code</th>
+            <th>Category</th>
+            <th>Global Wholesale Price</th>
+            <th>Adjustment</th>
             <th>New Price</th>
           </tr>
         </thead>
         <tbody>
-          {rows.map(r => (
-            <tr key={r.product?.id}>
-              <td>{r.product?.title}</td>
-              <td>${r.basedOnPrice?.toFixed(2)}</td>
-              <td>${r.newPrice?.toFixed(2)}</td>
-            </tr>
-          ))}
+          {rows.map((r) => {
+            const checked = selectedRows.includes(r.product.id);
+
+            return (
+              <tr key={r.product.id}>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => toggleRow(r.product.id)}
+                  />
+                </td>
+                <td>{r.product.title}</td>
+                <td>{r.product.skuCode || "-"}</td>
+                <td>{r.product.categoryId || "-"}</td>
+                <td>${r.base.toFixed(2)}</td>
+<td>
+  <div className="adjustment-input">
+    <span className="prefix">{getAdjustmentPrefix()}</span>
+<input
+  type="number"
+  step="0.01"
+  value={rowState[r.product.id]?.adjustment ?? ""}
+  onFocus={() => {
+    setRowState((prev) => {
+      const current = prev[r.product.id]?.adjustment;
+      if (current === 0) {
+        return {
+          ...prev,
+          [r.product.id]: { adjustment: "" },
+        };
+      }
+      return prev;
+    });
+  }}
+  onChange={(e) => {
+    const raw = e.target.value;
+
+    setRowState((prev) => ({
+      ...prev,
+      [r.product.id]: {
+        adjustment:
+          raw === "" ? "" : isNaN(Number(raw)) ? 0 : Number(raw),
+      },
+    }));
+  }}
+  onBlur={() => {
+    setRowState((prev) => {
+      const value = prev[r.product.id]?.adjustment;
+      return {
+        ...prev,
+        [r.product.id]: {
+          adjustment: value === "" ? 0 : value,
+        },
+      };
+    });
+  }}
+/>
+
+  </div>
+</td>
+
+                <td>${r.newPrice.toFixed(2)}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
+
+      <small className="muted">
+        Prices are calculated automatically. Negative values are not allowed.
+      </small>
     </div>
   );
 }

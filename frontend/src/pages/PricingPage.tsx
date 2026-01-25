@@ -20,9 +20,9 @@ export default function PricingPage() {
   });
 
   const [profileName, setProfileName] = useState("New Pricing Profile");
-  const [previewRows, setPreviewRows] = useState<
-    { product: Product; basedOnPrice: number; newPrice: number }[]
-  >([]);
+  // const [previewRows, setPreviewRows] = useState<
+  //   { product: Product; basedOnPrice: number; newPrice: number }[]
+  // >([]);
 
   useEffect(() => {
     fetchProducts().then(setProducts);
@@ -107,6 +107,11 @@ export default function PricingPage() {
       setSelected([]);
     }
   }, [mode, products]);
+
+  const selectedProducts = useMemo(() => {
+  return products.filter(p => selected.includes(p.id));
+}, [products, selected]);
+
 
   return (
     <div className="grid">
@@ -235,7 +240,7 @@ export default function PricingPage() {
           />
         </div>
         <div style={{ marginTop: 20 }}>
-          <PricePreview rows={previewRows} />
+          <PricePreview products={selectedProducts} />
         </div>
       </div>
     </div>

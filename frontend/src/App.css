@@ -390,8 +390,49 @@ body {
   opacity: 0.8;
 }
 
+/* ===== Adjustment Input  ===== */
 
+.adjustment-input {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+  width: 120px;
+  /* text-align: right;
+  font-weight: 500;
+  padding-left: 36px; */
+}
 
+.adjustment-input .prefix {
+  padding: 6px 8px;
+  background: #f6f8fa;
+  font-size: 13px;
+  color: #57606a;
+  border-right: 1px solid #d0d7de;
+  white-space: nowrap;
+}
+
+.adjustment-input input {
+  border: none;
+  padding: 6px 8px;
+  width: 100%;
+  font-size: 14px;
+  outline: none;
+}
+
+.adjustment-input input:focus {
+  background: #f0f8ff;
+}
+
+/* .adjustment-prefix {
+  position: absolute;
+  left: 12px;
+  color: #6b7280;
+  pointer-events: none;
+  font-weight: 500;
+} */
 
 
 /* ===== RESPONSIVE ===== */
