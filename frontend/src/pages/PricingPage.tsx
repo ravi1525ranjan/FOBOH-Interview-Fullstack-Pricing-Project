@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import type { Product, PricingProfile } from "../types";
-import { fetchProducts, fetchProfiles } from "../api/api";
+import type { Product} from "../types";
+import { fetchProducts} from "../api/api";
 import ProductTable from "../components/ProductTable";
 import PricePreview from "../components/PricePreview";
 
@@ -8,23 +8,16 @@ type SelectionMode = "one" | "many" | "all";
 
 export default function PricingPage() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [profiles, setProfiles] = useState<PricingProfile[]>([]);
+  // const [profiles, setProfiles] = useState<PricingProfile[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const [mode, setMode] = useState<SelectionMode>("many");
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filters, setFilters] = useState({
     category: "",
-    subCategory: "",
     segment: "",
     brand: "",
   });
-
-  //   const [basedOnProfileId, setBasedOnProfileId] = useState<string | null>(
-  //     "global",
-  //   );
-  //   const [adjustmentType, setAdjustmentType] = useState<AdjustmentType>("fixed");
-  //   const [incrementType, setIncrementType] = useState<IncrementType>("decrease");
-  //   const [adjustmentValue, setAdjustmentValue] = useState<number>(0);
 
   const [profileName, setProfileName] = useState("New Pricing Profile");
   const [previewRows, setPreviewRows] = useState<
@@ -33,31 +26,67 @@ export default function PricingPage() {
 
   useEffect(() => {
     fetchProducts().then(setProducts);
-    fetchProfiles().then(setProfiles);
+    // fetchProfiles().then(setProfiles);
   }, []);
 
+  const filterOptions = useMemo(() => {
+    const categories = new Set<string>();
+    const segments = new Set<string>();
+    const brands = new Set<string>();
+
+    products.forEach((p) => {
+      if (p.categoryId) categories.add(p.categoryId);
+      if (p.segmentId) segments.add(p.segmentId);
+      if (p.brand) brands.add(p.brand);
+    });
+
+    return {
+      categories: Array.from(categories),
+      segments: Array.from(segments),
+      brands: Array.from(brands),
+    };
+  }, [products]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300); // 300ms debounce delay
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
   const filteredProducts = useMemo(() => {
-    const q = search.trim().toLowerCase();
+    const q = debouncedSearch.trim().toLowerCase();
+
     return products.filter((p) => {
-      const matchesQ =
+      const matchesSearch =
         !q ||
         p.title.toLowerCase().includes(q) ||
-        p.sku.toLowerCase().includes(q);
+        p.skuCode.toLowerCase().includes(q);
 
       const matchesCategory =
-        !filters.category || p.category === filters.category;
-      const matchesSub =
-        !filters.subCategory || p.subCategory === filters.subCategory;
-      const matchesSeg = !filters.segment || p.segment === filters.segment;
+        !filters.category || p.categoryId === filters.category;
+
+      const matchesSegment =
+        !filters.segment || p.segmentId === filters.segment;
+
       const matchesBrand = !filters.brand || p.brand === filters.brand;
 
-      return (
-        matchesQ && matchesCategory && matchesSub && matchesSeg && matchesBrand
-      );
+      return matchesSearch && matchesCategory && matchesSegment && matchesBrand;
     });
-  }, [products, search, filters]);
+  }, [products, debouncedSearch, filters]);
 
+  const isSearching = search !== debouncedSearch;
   const selectableProducts = mode === "all" ? products : filteredProducts;
+
+  const clearFilters = () => {
+    setSearch("");
+    setFilters({
+      category: "",
+      segment: "",
+      brand: "",
+    });
+  };
 
   const toggle = (id: string) => {
     setSelected((prev) =>
@@ -78,47 +107,6 @@ export default function PricingPage() {
       setSelected([]);
     }
   }, [mode, products]);
-
-  //   const basedOnPrice = useMemo(() => {
-  //     // currently only global base price exists
-  //     return (product: Product) => product.basePrice;
-  //   }, []);
-
-  //   const calculatePreview = () => {
-  //     const rows = selectableProducts
-  //       .filter((p) => selected.includes(p.id))
-  //       .map((product) => {
-  //         const base = basedOnPrice(product);
-  //         const newPrice = calcNewPrice(
-  //           base,
-  //           adjustmentType,
-  //           incrementType,
-  //           adjustmentValue,
-  //         );
-  //         return { product, basedOnPrice: base, newPrice };
-  //       });
-
-  //     setPreviewRows(rows);
-  //   };
-
-  //   const applyProfile = async () => {
-  //     const items = previewRows.map((r) => ({
-  //       productId: r.product.id,
-  //       adjustmentType,
-  //       incrementType,
-  //       adjustmentValue,
-  //     }));
-
-  //     const payload = {
-  //       name: profileName,
-  //       basedOnProfileId,
-  //       items,
-  //     };
-
-  //     const created = await createProfile(payload);
-  //     setProfiles((prev) => [...prev, created]);
-  //     alert("Pricing profile created successfully!");
-  //   };
 
   return (
     <div className="grid">
@@ -162,8 +150,12 @@ export default function PricingPage() {
             </label>
           </div>
           <div>
-            <h2>Search & Filter</h2>
-
+            <div className="product-search">
+              <h2>Search for Products</h2>
+              <button className="btn-secondary" onClick={clearFilters}>
+                Clear Filters
+              </button>
+            </div>
             <div className="filter-row">
               {/* Search */}
               <div className="row">
@@ -173,6 +165,9 @@ export default function PricingPage() {
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Title or SKU"
                 />
+                {isSearching && (
+                  <small className="searching-text">Searching…</small>
+                )}
               </div>
 
               {/* Category */}
@@ -185,9 +180,11 @@ export default function PricingPage() {
                   }
                 >
                   <option value="">All</option>
-                  <option value="Wine">Wine</option>
-                  <option value="Beer">Beer</option>
-                  <option value="Spirits">Spirits</option>
+                  {filterOptions.categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -201,9 +198,11 @@ export default function PricingPage() {
                   }
                 >
                   <option value="">All</option>
-                  <option value="Premium">Premium</option>
-                  <option value="Standard">Standard</option>
-                  <option value="Economy">Economy</option>
+                  {filterOptions.segments.map((seg) => (
+                    <option key={seg} value={seg}>
+                      {seg}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -217,9 +216,11 @@ export default function PricingPage() {
                   }
                 >
                   <option value="">All</option>
-                  <option value="Brand A">Brand A</option>
-                  <option value="Brand B">Brand B</option>
-                  <option value="Brand C">Brand C</option>
+                  {filterOptions.brands.map((brand) => (
+                    <option key={brand} value={brand}>
+                      {brand}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -233,84 +234,7 @@ export default function PricingPage() {
             onToggleAll={toggleAll}
           />
         </div>
-
-        {/* <div className="row">
-          <label>Based On</label>
-          <select
-            value={basedOnProfileId ?? ""}
-            onChange={(e) => setBasedOnProfileId(e.target.value || null)}
-          >
-            {profiles.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="row">
-          <label>Adjustment Type</label>
-          <div className="radioRow">
-            <label>
-              <input
-                type="radio"
-                checked={adjustmentType === "fixed"}
-                onChange={() => setAdjustmentType("fixed")}
-              />
-              Fixed ($)
-            </label>
-            <label>
-              <input
-                type="radio"
-                checked={adjustmentType === "dynamic"}
-                onChange={() => setAdjustmentType("dynamic")}
-              />
-              Dynamic (%)
-            </label>
-          </div>
-        </div>
-
-        <div className="row">
-          <label>Increment</label>
-          <div className="radioRow">
-            <label>
-              <input
-                type="radio"
-                checked={incrementType === "increase"}
-                onChange={() => setIncrementType("increase")}
-              />
-              Increase
-            </label>
-            <label>
-              <input
-                type="radio"
-                checked={incrementType === "decrease"}
-                onChange={() => setIncrementType("decrease")}
-              />
-              Decrease
-            </label>
-          </div>
-        </div> */}
-
-        {/* <div className="row">
-          <label>Value</label>
-          <input
-            type="number"
-            value={adjustmentValue}
-            onChange={(e) => setAdjustmentValue(Number(e.target.value))}
-            min={0}
-            step={adjustmentType === "dynamic" ? 0.1 : 0.01}
-          />
-        </div>
-        <div className="row">
-          <button className="btn primary" onClick={calculatePreview}>
-            Recalculate Prices
-          </button>
-          <button className="btn" onClick={applyProfile}>
-            Apply Pricing
-          </button>
-        </div> */}
-        <div style={{marginTop: 20}}>
+        <div style={{ marginTop: 20 }}>
           <PricePreview rows={previewRows} />
         </div>
       </div>

@@ -1,10 +1,10 @@
 export type Product = {
   id: string;
   title: string;
-  sku: string;
+  skuCode: string;
   brand: string;
-  category: string;
+  categoryId: string;
   subCategory: string;
-  segment: string;
-  basePrice: number;
+  segmentId: string;
+  globalWholesalePrice: number;
 };

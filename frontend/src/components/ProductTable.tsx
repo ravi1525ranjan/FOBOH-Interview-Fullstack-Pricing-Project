@@ -46,7 +46,7 @@ export default function ProductTable({ products, selected, onToggle, onToggleAll
                 <td>{p.category}</td>
                 <td>{p.subCategory}</td>
                 <td>{p.segment}</td> */}
-                <td>${p.basePrice?.toFixed(2)}</td>
+                <td>${p.globalWholesalePrice?.toFixed(2)}</td>
               </tr>
             );
           })}
