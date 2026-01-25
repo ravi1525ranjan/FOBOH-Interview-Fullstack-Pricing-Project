@@ -380,6 +380,18 @@ body {
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
 }
 
+.icon {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+}
+
+.icon:hover {
+  opacity: 0.8;
+}
+
+
+
 
 
 /* ===== RESPONSIVE ===== */

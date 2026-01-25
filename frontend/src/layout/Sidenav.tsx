@@ -7,16 +7,19 @@ export default function Sidenav() {
       </div>
       <nav className="sidenav-menu">
         <a href="#" className="sidenav-link">
-          <span className="icon">🏠</span> Dashboard
+          <img src="/src/assets/icons/dashboard.svg" className="icon" alt="Dashboard" />
+Dashboard
+
         </a>
         <a href="#" className="sidenav-link active">
-          <span className="icon">💰</span> Pricing
+         <img src="/src/assets/icons/pricing.svg" className="icon" alt="Pricing" />
+Pricing
+
         </a>
-        {/* <a href="#" className="sidenav-link">
-          <span className="icon">📊</span> Reports
-        </a> */}
         <a href="#" className="sidenav-link">
-          <span className="icon">⚙️</span> Settings
+       <img src="/src/assets/icons/settings.svg" className="icon" alt="Settings" />
+Settings
+
         </a>
       </nav>
     </aside>

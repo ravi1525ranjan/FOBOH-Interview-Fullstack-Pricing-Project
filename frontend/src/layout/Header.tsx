@@ -26,8 +26,9 @@ export default function Header() {
 
         {/* RIGHT */}
         <div className="header-right">
-          <span className="icon">🔔</span>
-          <span className="icon">❓</span>
+<img src="/src/assets/icons/bell.svg" className="icon" alt="Notifications" />
+<img src="/src/assets/icons/help.svg" className="icon" alt="Help" />
+
         </div>
       </div>
     </header>
