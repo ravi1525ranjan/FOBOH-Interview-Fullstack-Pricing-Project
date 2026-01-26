@@ -28,8 +28,10 @@ return (
         <table className="table table-hover align-middle mb-0">
           <thead className="table-light">
             <tr>
+              {/* Checkbox Column */}
               <th style={{ width: "40px" }} className="ps-3"></th>
-              <th className="fw-semibold">Product Details</th>
+              {/* Removed text but kept colSpan to maintain the correct layout alignment */}
+              <th colSpan={2}></th>
             </tr>
           </thead>
           <tbody>
@@ -53,13 +55,32 @@ return (
                       }}
                     />
                   </td>
+                  
+                  {/* Image Column */}
+                  <td style={{ width: "60px" }}>
+                    <div 
+                      className="rounded border bg-white d-flex align-items-center justify-content-center"
+                      style={{ width: "45px", height: "45px", overflow: "hidden" }}
+                    >
+                      {p.imageUrl ? (
+                        <img 
+                          src={p.imageUrl} 
+                          alt={p.title} 
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                        />
+                      ) : (
+                        <span className="text-muted" style={{ fontSize: '10px' }}>No Img</span>
+                      )}
+                    </div>
+                  </td>
+
+                  {/* Title and SKU Column */}
                   <td>
-                    {/* Vertical stack for Title and SKU */}
                     <div className="d-flex flex-column py-1">
-                      <span className="fw-medium text-dark" style={{ fontSize: '14px' }}>
+                      <span className="fw-medium text-dark" style={{ fontSize: '14px', lineHeight: '1.2' }}>
                         {p.title}
                       </span>
-                      <p className="mb-0 text-muted" style={{ fontSize: '11px', letterSpacing: '0.3px', fontFamily: 'monospace' }}>
+                      <p className="mb-0 text-muted" style={{ fontSize: '11px', fontFamily: 'monospace', marginTop: '2px' }}>
                         SKU: {p.skuCode || 'N/A'}
                       </p>
                     </div>
@@ -67,9 +88,10 @@ return (
                 </tr>
               );
             })}
+            
             {products.length === 0 && (
               <tr>
-                <td colSpan={2} className="text-center py-4 text-muted small">
+                <td colSpan={3} className="text-center py-4 text-muted small">
                   No products found.
                 </td>
               </tr>

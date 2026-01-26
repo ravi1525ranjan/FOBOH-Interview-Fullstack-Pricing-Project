@@ -9,7 +9,8 @@ export const products: Product[] = [
     categoryId: "Alcoholic Beverage",
     subCategoryId: "Wine",
     segmentId: "Red",
-    globalWholesalePrice: 279.06
+    globalWholesalePrice: 279.06,
+    imageUrl: ""
   },
   {
     id: "2",
@@ -19,7 +20,8 @@ export const products: Product[] = [
     categoryId: "Alcoholic Beverage",
     subCategoryId: "Wine",
     segmentId: "Sparkling",
-    globalWholesalePrice: 120
+    globalWholesalePrice: 120,
+    imageUrl: ""
   },
   {
     id: "3",
@@ -29,7 +31,8 @@ export const products: Product[] = [
     categoryId: "Alcoholic Beverage",
     subCategoryId: "Wine",
     segmentId: "Rose",
-    globalWholesalePrice: 85.5
+    globalWholesalePrice: 85.5,
+    imageUrl: ""
   },
     {
     id: "4",
@@ -39,7 +42,8 @@ export const products: Product[] = [
     categoryId: "Alcoholic Beverage",
     subCategoryId: "Wine",
     segmentId: "White",
-    globalWholesalePrice: 215.04
+    globalWholesalePrice: 215.04,
+    imageUrl: ""
   },
     {
     id: "5",
@@ -49,7 +53,8 @@ export const products: Product[] = [
     categoryId: "Alcoholic Beverage",
     subCategoryId: "Wine",
     segmentId: "Sparkling",
-    globalWholesalePrice: 409.32
+    globalWholesalePrice: 409.32,
+    imageUrl: ""
   }
   
 ];

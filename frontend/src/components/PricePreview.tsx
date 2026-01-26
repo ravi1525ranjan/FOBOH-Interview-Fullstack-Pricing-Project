@@ -243,10 +243,10 @@ return (
                     onChange={toggleAll}
                   />
                 </th>
-                <th>Product</th>
-                <th>SKU</th>
+                <th>Product Title</th>
+                <th>SKU Code</th>
                 <th>Category</th>
-                <th>Base</th>
+                <th>Global Wholesale Price</th>
                 <th style={{ width: "150px" }}>Adjustment</th>
                 <th className="text-end pe-3">New Price</th>
               </tr>

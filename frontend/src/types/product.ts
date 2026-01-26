@@ -7,4 +7,5 @@ export type Product = {
   subCategory: string;
   segmentId: string;
   globalWholesalePrice: number;
+  imageUrl?:string;
 };
