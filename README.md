@@ -1,107 +1,90 @@
 # Pricing Profile Management – FOBOH Take-Home Challenge
 
-This repository contains my implementation of a pricing feature built as part of a FOBOH take-home challenge. The goal of this exercise was not to solve abstract problems, but to simulate real-world product work — designing and building a feature that balances usability, maintainability, and clear technical trade-offs within a limited time window.
+This repository contains a full-stack implementation of a **Bespoke Pricing Engine**, built as part of the FOBOH technical challenge. The goal was to design a professional, maintainable tool that allows suppliers to manage customer-specific pricing with ease and transparency.
 
-The feature focuses on enabling suppliers to create bespoke pricing profiles for their customers by selecting products from their catalogue and applying price adjustments relative to the global wholesale price.
+---
 
-The solution consists of:
+##  Overview
 
-A browser-based React application for managing pricing profiles
+Suppliers on FOBOH often need to tailor pricing for specific customers to remain competitive. While a global wholesale price exists, this application enables suppliers to create "Bespoke Pricing Profiles." 
 
-A Node.js backend that exposes APIs for product retrieval and pricing calculations
+The solution balances powerful product discovery with a simple, deterministic pricing logic to ensure that suppliers can adjust prices without making costly errors.
 
+---
 
-# Problem Context
+##  How to Use the System (Step-by-Step)
 
-Suppliers on FOBOH often need to tailor pricing for specific customers or customer groups in order to maximise margin and stay competitive. While a global wholesale price exists, not all customers should receive the same pricing.
+### 1. Navigation & Layout
+* **Hamburger Toggle:** Use the hamburger icon in the top header to collapse or expand the sidebar. This allows you to switch between a focused "Icon-only" view and a full navigation view.
+* **Contextual Header:** View the current date, user info, and active page title at a glance.
 
-This feature allows suppliers to:
+### 2. Selection Mode
+Choose how you want to apply pricing by selecting one of the three modes:
+* **One Product:** Target a single specific item.
+* **Multiple Products:** Search and filter to pick a specific group of products.
+* **All Products:** Apply a price change to your entire catalog. 
+    * *Note: In "All Products" mode, Search and Filters are automatically disabled to ensure the price applies globally without confusion.*
 
-Create pricing profiles for one, many, or all products
+### 3. Product Discovery
+* **Real-time Search:** Use the search bar to find products by **Title** or **SKU**.
+* **Advanced Filtering:** Narrow down your catalog by **Category, Segment, or Brand**.
+* **Selection Management:** Use the **Select All** or **Unselect All** buttons to manage large lists of products instantly.
 
-Identify products using search and advanced filtering
+### 4. Pricing Adjustments & Preview
+* **Define Adjustments:** Apply price changes using **Fixed Dollar ($)** amounts or **Percentage (%)** increases/decreases.
+* **Real-Time Preview:** Before finalizing, the system generates a live preview showing:
+    * The **Original Wholesale Price**.
+    * The exact **Adjustment** being made.
+    * The final **Bespoke Price** the customer will see.
+* **Default Fallback:** Any product not explicitly included in a profile will automatically fall back to the global wholesale price.
 
-Apply fixed, percentage-based, or custom price adjustments
+---
 
-Clearly see how adjusted prices are calculated “based on” the global wholesale price
+##  Technical Stack & Architecture
 
-Fall back to the default price for any products not included in the profile
+### Frontend
+* **React (TypeScript):** For a type-safe, component-based UI.
+* **Bootstrap 5:** For responsive styling and layout.
+* **State Management:** Lifted state logic to handle synchronization between the Sidebar, Header, and Table.
 
-# Key Functional Areas
+### Backend
+* **Node.js & Express:** Providing a clean REST API for product data and pricing calculations.
+* **Swagger (OpenAPI 3.0):** Interactive API documentation available at `/api-docs`.
 
-   <!-- Product Discovery -->
+---
 
-    Suppliers can identify products for a pricing profile by:
+##  Technical Decisions & Trade-offs
 
-    Searching by Product Title, SKU, or partial/fuzzy matches
+* **Explicit Defaults:** The UI explicitly states when a product is reverting to a "Global Price" to build user trust.
+* **Interaction Design:** Interactive elements like the "Select All" button remain active even in global modes, while search filters lock to prevent "selection ambiguity."
+* **Fuzzy Search:** Implemented a debounced search to reduce unnecessary API calls/re-renders while maintaining a smooth user experience.
 
-    Filtering by Category, Sub-Category, Segment, Brand, and Style (wine-specific)
+---
 
-    The UI makes it explicit which products are included in the pricing profile and which continue to use the default wholesale price.
+##  Future Improvements
 
-   <!-- Product Selection -->
+If extended further, I would implement:
+1.  **Persistence:** Migrate from in-memory storage to a MongoDB database.
+3.  **Audit Logs:** A history of who modified pricing profiles for financial accountability.
+4.  **Bulk Upload:** Ability to upload CSV files to create pricing overrides.
 
-    Individual products can be selected or unselected
+---
 
-    Bulk selection is supported (select all / unselect all)
+##  Setup Instructions
 
-    The pricing profile can target a subset of products or the entire catalogue
+1.  **Clone & Install:**
+    ```bash
+    git clone [https://github.com/your-username/foboh-pricing.git](https://github.com/your-username/foboh-pricing.git)
+    npm install
+    ```
+2.  **Run Backend:**
+    ```bash
+    npm run server # Runs on http://localhost:4000
+    ```
+3.  **Run Frontend:**
+    ```bash
+    npm run dev    # Runs on http://localhost:5173
+    ```
 
-   <!-- Pricing Adjustments -->
-
-    Suppliers can apply pricing changes using:
-
-    Fixed dollar adjustments
-
-    Percentage-based adjustments
-
-    Custom price overrides
-
-    Before applying changes, users can preview:
-
-    The original global wholesale price
-
-    The adjustment applied
-
-    The resulting calculated price
-
-    This helps reduce mistakes and builds trust in the pricing logic.
-
-# Technical Approach & Decisions
-
-React was used for the frontend to build a responsive, state-driven UI that cleanly separates concerns (product discovery, selection, pricing logic).
-
-Node.js provides a simple backend API for fetching product data and handling pricing calculations.
-
-The UI focuses on clarity over visual complexity — the intent is to make pricing changes easy to understand and hard to misapply.
-
-Pricing calculations are designed to be deterministic and transparent, mirroring how a real pricing engine would behave.
-
-Given the time constraints, the emphasis was placed on:
-
-Clear data flow
-
-Readable, maintainable code
-
-Sensible component boundaries
-
-Explicit handling of defaults vs overridden pricing
-
-
-# Trade-offs & Future Improvements
-
-If I were to extend this further, I would:
-
-Add persistence for pricing profiles (e.g. database-backed storage)
-
-Improve fuzzy search with a dedicated search engine or indexing strategy
-
-Introduce validation and conflict handling for overlapping pricing profiles
-
-Add role-based access and audit logs for pricing changes
-
-Expand test coverage, particularly around pricing edge cases
-
-# Final Notes
-
-This project was approached as if it were an internal FOBOH feature rather than a coding test. The structure, documentation, and decisions reflect how I would build and explain a feature when working within a product team.
+---
+**Final Note:** This project was built to simulate a real-world product feature, prioritizing clean data flow and a user-centric interface.
