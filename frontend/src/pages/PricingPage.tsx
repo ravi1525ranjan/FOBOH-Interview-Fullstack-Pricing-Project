@@ -326,6 +326,7 @@ export default function PricingPage() {
             <ProductTable
               products={selectableProducts}
               selected={selected}
+              totalProductsCount={selectableProducts.length}
               onToggle={toggle}
               onToggleAll={toggleAll}
             />

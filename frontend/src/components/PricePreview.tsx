@@ -101,7 +101,7 @@ return (
     style={{ backgroundColor: "ghostwhite" }}
   >
     <div className="card-body p-4">
-      <h5 className="fw-bold mb-4">Price Preview</h5>
+      <h5 className="fw-bold mb-4">Bespoke Product Price</h5>
 
       {/* Changed row to d-flex flex-column for vertical stacking */}
       <div className="d-flex flex-column gap-3 mb-4">
