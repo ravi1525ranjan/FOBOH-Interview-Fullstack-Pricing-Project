@@ -1,35 +1,88 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Product, AdjustmentType, IncrementType } from "../types";
+import { previewPricing } from "../api/api";
 
 type Props = {
   products: Product[];
 };
 
 type RowState = {
+  adjustment: number | "";
+};
+
+type PricingRowPayload = {
+  productId: string;
   adjustment: number;
 };
 
 export default function PricePreview({ products }: Props) {
-  const [basedOn, setBasedOn] = useState<"global">("global");
   const [adjustmentType, setAdjustmentType] = useState<AdjustmentType>("fixed");
   const [incrementType, setIncrementType] = useState<IncrementType>("decrease");
 
-  // Row-level adjustment values
-  const [rowState, setRowState] = useState<Record<string, { adjustment: number | "" }>>({});
+  const [rowState, setRowState] = useState<Record<string, RowState>>({});
+  const [debouncedRowState, setDebouncedRowState] = useState<
+    Record<string, RowState>
+  >({});
 
-  // Multi-select rows
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [priceMap, setPriceMap] = useState<Record<string, number>>({});
 
+  /* ---------------- INIT ---------------- */
   useEffect(() => {
-    // Initialize row state when products change
     const initial: Record<string, RowState> = {};
+    const prices: Record<string, number> = {};
+
     products.forEach((p) => {
       initial[p.id] = { adjustment: 0 };
+      prices[p.id] = p.globalWholesalePrice ?? 0;
     });
+
     setRowState(initial);
+    setDebouncedRowState(initial);
+    setPriceMap(prices);
     setSelectedRows(products.map((p) => p.id));
   }, [products]);
 
+  /* ---------------- DEBOUNCE ---------------- */
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedRowState(rowState);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [rowState]);
+
+  /* ---------------- BACKEND PRICING ---------------- */
+  useEffect(() => {
+    if (!products.length) return;
+
+    const rows: PricingRowPayload[] = products.map((p) => {
+      const raw = rowState[p.id]?.adjustment;
+
+      return {
+        productId: p.id,
+        adjustment: typeof raw === "number" ? raw : 0,
+      };
+    });
+
+    previewPricing({
+      adjustmentType,
+      incrementType,
+      rows,
+    }).then((res) => {
+      setPriceMap((prev) => {
+        const updated = { ...prev };
+
+        res.forEach((r) => {
+          updated[r.productId] = r.newPrice;
+        });
+
+        return updated;
+      });
+    });
+  }, [debouncedRowState, adjustmentType, incrementType, products]);
+
+  /* ---------------- HELPERS ---------------- */
   const toggleRow = (id: string) => {
     setSelectedRows((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
@@ -37,66 +90,39 @@ export default function PricePreview({ products }: Props) {
   };
 
   const toggleAll = () => {
-    if (selectedRows.length === products.length) {
-      setSelectedRows([]);
-    } else {
-      setSelectedRows(products.map((p) => p.id));
-    }
+    setSelectedRows((prev) =>
+      prev.length === products.length ? [] : products.map((p) => p.id),
+    );
   };
 
-const calcNewPrice = (base: number, adjustment: number): number => {
-  if (base <= 0 || adjustment <= 0) return Number(base.toFixed(2));
+  const getAdjustmentPrefix = () => {
+    if (adjustmentType === "fixed" && incrementType === "increase") return "+$";
+    if (adjustmentType === "fixed" && incrementType === "decrease") return "-$";
+    if (adjustmentType === "dynamic" && incrementType === "increase")
+      return "+%";
+    return "-%";
+  };
 
-  const delta =
-    adjustmentType === "fixed"
-      ? adjustment
-      : (adjustment / 100) * base;
-
-  const price =
-    incrementType === "increase"
-      ? base + delta
-      : base - delta;
-
-  return Math.max(0, Number(price.toFixed(2)));
-};
-
-
+  /* ---------------- UI ROWS ---------------- */
   const rows = useMemo(() => {
-    return products.map((product) => {
-      const base = product.globalWholesalePrice ?? 0;
-     const rawAdjustment = rowState[product.id]?.adjustment;
-const adjustment =
-  typeof rawAdjustment === "number" ? rawAdjustment : 0;
-
-      const newPrice = calcNewPrice(base, adjustment);
-
-      return {
-        product,
-        base,
-        adjustment,
-        newPrice,
-      };
-    });
-  }, [products, rowState, adjustmentType, incrementType]);
+    return products.map((product) => ({
+      product,
+      base: product.globalWholesalePrice ?? 0,
+      newPrice: priceMap[product.id] ?? product.globalWholesalePrice ?? 0,
+    }));
+  }, [products, priceMap]);
 
   if (!products.length) return null;
 
-  const getAdjustmentPrefix = () => {
-  if (adjustmentType === "fixed" && incrementType === "increase") return "+$";
-  if (adjustmentType === "fixed" && incrementType === "decrease") return "-$";
-  if (adjustmentType === "dynamic" && incrementType === "increase") return "+%";
-  return "-%";
-};
-
-
+  /* ---------------- RENDER ---------------- */
   return (
     <div className="card">
       <h2>Price Preview</h2>
 
-      {/* Based On */}
+            {/* -------- Based On -------- */}
       <div className="row">
         <label>Based On</label>
-        <select value={basedOn} onChange={() => setBasedOn("global")}>
+        <select>
           <option value="global">Global Wholesale Price</option>
         </select>
       </div>
@@ -147,7 +173,7 @@ const adjustment =
         </div>
       </div>
 
-      {/* Table */}
+      {/* TABLE */}
       <table className="table">
         <thead>
           <tr>
@@ -158,10 +184,10 @@ const adjustment =
                 onChange={toggleAll}
               />
             </th>
-            <th>Product Title</th>
-            <th>SKU Code</th>
+            <th>Product</th>
+            <th>SKU</th>
             <th>Category</th>
-            <th>Global Wholesale Price</th>
+            <th>Base</th>
             <th>Adjustment</th>
             <th>New Price</th>
           </tr>
@@ -183,51 +209,47 @@ const adjustment =
                 <td>{r.product.skuCode || "-"}</td>
                 <td>{r.product.categoryId || "-"}</td>
                 <td>${r.base.toFixed(2)}</td>
-<td>
-  <div className="adjustment-input">
-    <span className="prefix">{getAdjustmentPrefix()}</span>
-<input
-  type="number"
-  step="0.01"
-  value={rowState[r.product.id]?.adjustment ?? ""}
-  onFocus={() => {
-    setRowState((prev) => {
-      const current = prev[r.product.id]?.adjustment;
-      if (current === 0) {
-        return {
-          ...prev,
-          [r.product.id]: { adjustment: "" },
-        };
-      }
-      return prev;
-    });
-  }}
-  onChange={(e) => {
-    const raw = e.target.value;
 
-    setRowState((prev) => ({
-      ...prev,
-      [r.product.id]: {
-        adjustment:
-          raw === "" ? "" : isNaN(Number(raw)) ? 0 : Number(raw),
-      },
-    }));
-  }}
-  onBlur={() => {
-    setRowState((prev) => {
-      const value = prev[r.product.id]?.adjustment;
-      return {
-        ...prev,
-        [r.product.id]: {
-          adjustment: value === "" ? 0 : value,
-        },
-      };
-    });
-  }}
-/>
-
-  </div>
-</td>
+                <td>
+                  <div className="adjustment-input">
+                    <span className="prefix">{getAdjustmentPrefix()}</span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={rowState[r.product.id]?.adjustment ?? ""}
+                      onFocus={() => {
+                        if (rowState[r.product.id]?.adjustment === 0) {
+                          setRowState((prev) => ({
+                            ...prev,
+                            [r.product.id]: { adjustment: "" },
+                          }));
+                        }
+                      }}
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        setRowState((prev) => ({
+                          ...prev,
+                          [r.product.id]: {
+                            adjustment:
+                              raw === ""
+                                ? ""
+                                : isNaN(Number(raw))
+                                  ? 0
+                                  : Number(raw),
+                          },
+                        }));
+                      }}
+                      onBlur={() => {
+                        if (rowState[r.product.id]?.adjustment === "") {
+                          setRowState((prev) => ({
+                            ...prev,
+                            [r.product.id]: { adjustment: 0 },
+                          }));
+                        }
+                      }}
+                    />
+                  </div>
+                </td>
 
                 <td>${r.newPrice.toFixed(2)}</td>
               </tr>
@@ -235,10 +257,6 @@ const adjustment =
           })}
         </tbody>
       </table>
-
-      <small className="muted">
-        Prices are calculated automatically. Negative values are not allowed.
-      </small>
     </div>
   );
 }

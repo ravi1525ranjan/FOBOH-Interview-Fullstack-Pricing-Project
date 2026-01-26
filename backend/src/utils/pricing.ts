@@ -1,29 +1,35 @@
-import { AdjustmentType, IncrementType } from "../types/profile";
+// import { AdjustmentType, IncrementType } from "../types/product";
+
+type PricingInput = {
+  basePrice: number;
+  adjustmentValue: number;
+  adjustmentType: any;
+  incrementType: any;
+};
 
 export function calculateNewPrice({
   basePrice,
+  adjustmentValue,
   adjustmentType,
   incrementType,
-  adjustmentValue
-}: {
-  basePrice: number;
-  adjustmentType: AdjustmentType;
-  incrementType: IncrementType;
-  adjustmentValue: number;
-}) {
-  if (adjustmentType === "fixed") {
-    return incrementType === "increase"
-      ? basePrice + adjustmentValue
-      : basePrice - adjustmentValue;
+}: PricingInput): number {
+  if (basePrice <= 0 || adjustmentValue <= 0) {
+    return roundAndClamp(basePrice);
   }
 
-  const delta = (basePrice * adjustmentValue) / 100;
-  return incrementType === "increase"
-    ? basePrice + delta
-    : basePrice - delta;
+  const delta =
+    adjustmentType === "fixed"
+      ? adjustmentValue
+      : (adjustmentValue / 100) * basePrice;
+
+  const price =
+    incrementType === "increase"
+      ? basePrice + delta
+      : basePrice - delta;
+
+  return roundAndClamp(price);
 }
 
-// ensures price never becomes negative
-export function clampPrice(price: number) {
-  return Math.max(0, Math.round(price * 100) / 100);
+function roundAndClamp(value: number) {
+  return Math.max(0, Number(value.toFixed(2)));
 }

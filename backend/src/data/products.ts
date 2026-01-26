@@ -30,5 +30,26 @@ export const products: Product[] = [
     subCategoryId: "Wine",
     segmentId: "Rose",
     globalWholesalePrice: 85.5
+  },
+    {
+    id: "4",
+    title: "KoyamaTussockRiesling2019",
+    skuCode: "KOYRIE19",
+    brand: "KoyamaWines",
+    categoryId: "Alcoholic Beverage",
+    subCategoryId: "Wine",
+    segmentId: "White",
+    globalWholesalePrice: 215.04
+  },
+    {
+    id: "5",
+    title: "Lacourte-GodbillonBrut CruNV",
+    skuCode: "LACBNATNV6",
+    brand: "Lacourte-Godbillon",
+    categoryId: "Alcoholic Beverage",
+    subCategoryId: "Wine",
+    segmentId: "Sparkling",
+    globalWholesalePrice: 409.32
   }
+  
 ];

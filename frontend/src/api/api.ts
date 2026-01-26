@@ -2,6 +2,12 @@ import { type Product, type PricingProfile } from "../types";
 
 const API_BASE = "http://localhost:4000/api";
 
+type PricingPreviewPayload = {
+  adjustmentType: "fixed" | "dynamic";
+  incrementType: "increase" | "decrease";
+  rows: { productId: string; adjustment: number }[];
+};
+
 export async function fetchProducts(query?: Record<string, string>) {
   const params = new URLSearchParams(query as any);
   const res = await fetch(`${API_BASE}/products?${params.toString()}`);
@@ -20,4 +26,16 @@ export async function createProfile(profile: Omit<PricingProfile, "id" | "create
     body: JSON.stringify(profile)
   });
   return res.json() as Promise<PricingProfile>;
+}
+
+export async function previewPricing(payload: PricingPreviewPayload) {
+  const res = await fetch(`${API_BASE}/pricing/preview`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  return res.json() as Promise<
+    { productId: string; basePrice: number; newPrice: number }[]
+  >;
 }
