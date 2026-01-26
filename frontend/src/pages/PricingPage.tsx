@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import type { Product} from "../types";
-import { fetchProducts} from "../api/api";
+import type { Product } from "../types";
+import { fetchProducts } from "../api/api";
 import ProductTable from "../components/ProductTable";
 import PricePreview from "../components/PricePreview";
 
@@ -8,7 +8,6 @@ type SelectionMode = "one" | "many" | "all";
 
 export default function PricingPage() {
   const [products, setProducts] = useState<Product[]>([]);
-  // const [profiles, setProfiles] = useState<PricingProfile[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const [mode, setMode] = useState<SelectionMode>("many");
   const [search, setSearch] = useState("");
@@ -19,14 +18,12 @@ export default function PricingPage() {
     brand: "",
   });
 
-  const [profileName, setProfileName] = useState("New Pricing Profile");
-  // const [previewRows, setPreviewRows] = useState<
-  //   { product: Product; basedOnPrice: number; newPrice: number }[]
-  // >([]);
+  const [profileName, setProfileName] = useState(
+    "Cheeky little description goes in here",
+  );
 
   useEffect(() => {
     fetchProducts().then(setProducts);
-    // fetchProfiles().then(setProfiles);
   }, []);
 
   const filterOptions = useMemo(() => {
@@ -50,7 +47,7 @@ export default function PricingPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
-    }, 300); // 300ms debounce delay
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [search]);
@@ -109,82 +106,169 @@ export default function PricingPage() {
   }, [mode, products]);
 
   const selectedProducts = useMemo(() => {
-  return products.filter(p => selected.includes(p.id));
-}, [products, selected]);
+    return products.filter((p) => selected.includes(p.id));
+  }, [products, selected]);
 
+  const handleBack = () => {
+    console.log("Navigating back...");
+  };
+
+  const handleNext = () => {
+    console.log("Navigating next...", { profileName, selectedProducts });
+  };
 
   return (
-    <div className="grid">
-      <div className="card">
-        <h2>Pricing Profile</h2>
+    <div className="container-fluid py-4">
+      <div
+        className="card shadow-sm border-0"
+        style={{ backgroundColor: "ghostwhite" }}
+      >
+        <div className="card-body p-4">
+          {/* Header Section */}
+          <div className="mb-4">
+            <h2 className="h4 mb-3 fw-bold">Basic Pricing Profile</h2>
+            <div className="row g-4">
+              {/* Profile Name */}
+              <div className="col-md-6">
+                <label className="form-label fw-semibold small text-muted">
+                  Profile Name
+                </label>
+                <input
+                  className="form-control"
+                  placeholder="Enter profile name..."
+                  value={profileName}
+                  onChange={(e) => setProfileName(e.target.value)}
+                />
+              </div>
 
-        <div className="row">
-          <label>Profile Name</label>
-          <input
-            value={profileName}
-            onChange={(e) => setProfileName(e.target.value)}
-          />
-        </div>
+              <hr className="my-4 text-muted opacity-25" />
 
-        <div className="row">
-          <label>Selection Type</label>
-          <div className="radioRow">
-            <label>
-              <input
-                type="radio"
-                checked={mode === "one"}
-                onChange={() => setMode("one")}
-              />
-              One Product
-            </label>
-            <label>
-              <input
-                type="radio"
-                checked={mode === "many"}
-                onChange={() => setMode("many")}
-              />
-              Multiple Products
-            </label>
-            <label>
-              <input
-                type="radio"
-                checked={mode === "all"}
-                onChange={() => setMode("all")}
-              />
-              All Products
-            </label>
+              <div className="col-md-6">
+                <label className="form-label fw-semibold small text-muted d-block">
+                  Selection Type
+                </label>
+                <div className="d-flex gap-4 mt-2">
+                  {/* One Product */}
+                  <div className="form-check d-flex align-items-center me-2">
+                    <input
+                      className="form-check-input rounded-circle me-2"
+                      type="radio"
+                      id="modeOne"
+                      style={{
+                        width: "14px",
+                        height: "14px",
+                        marginTop: "0",
+                        backgroundColor: mode === "one" ? "#26976C" : "",
+                        borderColor: mode === "one" ? "#26976C" : "",
+                      }}
+                      checked={mode === "one"}
+                      onChange={() => setMode("one")}
+                    />
+                    <label className="form-check-label small" htmlFor="modeOne">
+                      One Product
+                    </label>
+                  </div>
+
+                  {/* Multiple */}
+                  <div className="form-check d-flex align-items-center me-2">
+                    <input
+                      className="form-check-input rounded-circle me-2"
+                      type="radio"
+                      id="modeMany"
+                      style={{
+                        width: "14px",
+                        height: "14px",
+                        marginTop: "0",
+                        backgroundColor: mode === "many" ? "#26976C" : "",
+                        borderColor: mode === "many" ? "#26976C" : "",
+                      }}
+                      checked={mode === "many"}
+                      onChange={() => setMode("many")}
+                    />
+                    <label
+                      className="form-check-label small"
+                      htmlFor="modeMany"
+                    >
+                      Multiple
+                    </label>
+                  </div>
+
+                  {/* All Products */}
+                  <div className="form-check d-flex align-items-center">
+                    <input
+                      className="form-check-input rounded-circle me-2"
+                      type="radio"
+                      id="modeAll"
+                      style={{
+                        width: "14px",
+                        height: "14px",
+                        marginTop: "0",
+                        backgroundColor: mode === "all" ? "#26976C" : "",
+                        borderColor: mode === "all" ? "#26976C" : "",
+                      }}
+                      checked={mode === "all"}
+                      onChange={() => setMode("all")}
+                    />
+                    <label className="form-check-label small" htmlFor="modeAll">
+                      All Products
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div>
-            <div className="product-search">
-              <h2>Search for Products</h2>
-              <button className="btn-secondary" onClick={clearFilters}>
+
+          {/* Filters Section - All in one line */}
+          <div className="mb-4">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h5 className="h6 mb-0 fw-bold">Search & Filters</h5>
+              <button
+                className="btn btn-outline-danger btn-sm px-3"
+                onClick={clearFilters}
+                style={{ fontSize: "12px" }}
+              >
                 Clear Filters
               </button>
             </div>
-            <div className="filter-row">
+
+            <div className="d-flex flex-row align-items-end gap-2 w-100">
               {/* Search */}
-              <div className="row">
-                <label>Search</label>
-                <input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Title or SKU"
-                />
-                {isSearching && (
-                  <small className="searching-text">Searching…</small>
-                )}
+              <div className="flex-fill">
+                <label className="form-label small text-muted mb-1">
+                  Search
+                </label>
+                <div className="position-relative">
+                  <input
+                    className="form-control form-control-sm"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Title or SKU"
+                  />
+                  {isSearching && (
+                    <div className="position-absolute end-0 top-50 translate-middle-y me-2">
+                      <div
+                        className="spinner-border spinner-border-sm text-success"
+                        style={{ width: "12px", height: "12px" }}
+                        role="status"
+                      ></div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Category */}
-              <div className="row">
-                <label>Category</label>
+              <div className="flex-fill">
+                <label className="form-label small text-muted mb-1">
+                  Category
+                </label>
                 <select
+                  className="form-select form-select-sm"
                   value={filters.category}
                   onChange={(e) =>
                     setFilters((v) => ({ ...v, category: e.target.value }))
                   }
                 >
-                  <option value="">All</option>
+                  <option value="">All Categories</option>
                   {filterOptions.categories.map((cat) => (
                     <option key={cat} value={cat}>
                       {cat}
@@ -194,15 +278,18 @@ export default function PricingPage() {
               </div>
 
               {/* Segment */}
-              <div className="row">
-                <label>Segment</label>
+              <div className="flex-fill">
+                <label className="form-label small text-muted mb-1">
+                  Segment
+                </label>
                 <select
+                  className="form-select form-select-sm"
                   value={filters.segment}
                   onChange={(e) =>
                     setFilters((v) => ({ ...v, segment: e.target.value }))
                   }
                 >
-                  <option value="">All</option>
+                  <option value="">All Segments</option>
                   {filterOptions.segments.map((seg) => (
                     <option key={seg} value={seg}>
                       {seg}
@@ -212,15 +299,18 @@ export default function PricingPage() {
               </div>
 
               {/* Brand */}
-              <div className="row">
-                <label>Brand</label>
+              <div className="flex-fill">
+                <label className="form-label small text-muted mb-1">
+                  Brand
+                </label>
                 <select
+                  className="form-select form-select-sm"
                   value={filters.brand}
                   onChange={(e) =>
                     setFilters((v) => ({ ...v, brand: e.target.value }))
                   }
                 >
-                  <option value="">All</option>
+                  <option value="">All Brands</option>
                   {filterOptions.brands.map((brand) => (
                     <option key={brand} value={brand}>
                       {brand}
@@ -230,17 +320,46 @@ export default function PricingPage() {
               </div>
             </div>
           </div>
-        </div>
-        <div>
-          <ProductTable
-            products={selectableProducts}
-            selected={selected}
-            onToggle={toggle}
-            onToggleAll={toggleAll}
-          />
-        </div>
-        <div style={{ marginTop: 20 }}>
-          <PricePreview products={selectedProducts} />
+
+          {/* Table Container */}
+          <div className="table-responsive border rounded-3">
+            <ProductTable
+              products={selectableProducts}
+              selected={selected}
+              onToggle={toggle}
+              onToggleAll={toggleAll}
+            />
+          </div>
+
+          {/* Bottom Preview */}
+          <div className="mt-4 pt-3">
+            <PricePreview products={selectedProducts} />
+          </div>
+
+          {/* Action Footer Buttons */}
+          {/* Action Footer Buttons */}
+          <div className="d-flex justify-content-end align-items-center gap-3 mt-5 pt-4 border-top">
+            <button
+              className="btn btn-outline-secondary btn-sm rounded-pill px-4 fw-semibold"
+              style={{ fontSize: "13px" }}
+              onClick={handleBack}
+            >
+              Back
+            </button>
+            <button
+              className="btn btn-success btn-sm rounded-pill px-4 fw-bold shadow-sm"
+              style={{
+                backgroundColor: "#26976C",
+                borderColor: "#26976C",
+                fontSize: "13px",
+                paddingTop: "8px",
+                paddingBottom: "8px",
+              }}
+              onClick={handleNext}
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>

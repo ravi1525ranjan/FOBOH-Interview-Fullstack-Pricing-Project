@@ -11,24 +11,27 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="header">
-      <div className="header-inner header-layout">
-        {/* LEFT */}
-        <div className="header-left">
-          <span className="hello">Hello, Ravi</span>
-          <span className="datetime">{today}</span>
+    <header className="navbar navbar-expand-lg border-bottom px-4" style={{ backgroundColor: "#26976C" }}>
+      <div className="container-fluid d-flex justify-content-between align-items-center py-2">
+        {/* LEFT: User Info */}
+        <div className="d-flex flex-column text-white">
+          <span className="fw-bold small">Hello, Ravi</span>
+          <span className="small opacity-75" style={{ fontSize: '12px' }}>{today}</span>
         </div>
 
-        {/* CENTER */}
-        <div className="header-center">
-          <h1>Pricing Profile</h1>
+        {/* CENTER: Title */}
+        <div className="position-absolute start-50 translate-middle-x">
+          <h1 className="h5 mb-0 fw-semibold text-white">Pricing Profile</h1>
         </div>
 
-        {/* RIGHT */}
-        <div className="header-right">
-<img src="/src/assets/icons/bell.svg" className="icon" alt="Notifications" />
-<img src="/src/assets/icons/help.svg" className="icon" alt="Help" />
-
+        {/* RIGHT: Icons */}
+        <div className="d-flex align-items-center gap-3">
+          <button className="btn btn-link p-0 text-white opacity-75 hover-opacity-100">
+            <img src="/src/assets/icons/bell.svg" width="20" height="20" alt="Notifications" />
+          </button>
+          <button className="btn btn-link p-0 text-white opacity-75 hover-opacity-100">
+            <img src="/src/assets/icons/help.svg" width="20" height="20" alt="Help" />
+          </button>
         </div>
       </div>
     </header>
