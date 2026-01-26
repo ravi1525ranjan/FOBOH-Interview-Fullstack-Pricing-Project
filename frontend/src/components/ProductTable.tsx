@@ -1,11 +1,12 @@
 import { type Product } from "../types/product";
 
 type Props = {
-  products: Product[]; // This is your filtered list
-  totalProductsCount: number; // Pass the total count from your API here
+  products: Product[];
+  totalProductsCount: number;
   selected: string[];
   onToggle: (id: string) => void;
   onToggleAll: () => void;
+  mode: "one" | "many" | "all"; 
 };
 
 export default function ProductTable({
@@ -14,8 +15,8 @@ export default function ProductTable({
   selected,
   onToggle,
   onToggleAll,
+  mode
 }: Props) {
-  // Logic: Only count selected items that are actually in the current filtered list
   const visibleSelectedCount = products.filter((p) =>
     selected.includes(p.id),
   ).length;
@@ -28,7 +29,6 @@ export default function ProductTable({
       className="card border-0 shadow-sm"
       style={{ backgroundColor: "ghostwhite" }}
     >
-      {/* Header with Product Counts */}
       <div className="card-header bg-white border-bottom-0 pt-3 d-flex justify-content-between align-items-center">
         <div className="d-flex align-items-center gap-2">
           <h5 className="mb-0 fw-bold">Products</h5>
@@ -42,6 +42,7 @@ export default function ProductTable({
         <button
           className={`btn btn-sm ${allSelected ? "btn-outline-secondary" : "btn-success"}`}
           onClick={onToggleAll}
+          // Disabled removed from here
           style={
             !allSelected
               ? { backgroundColor: "#26976C", borderColor: "#26976C" }
@@ -72,6 +73,7 @@ export default function ProductTable({
                         type="checkbox"
                         checked={checked}
                         onChange={() => onToggle(p.id)}
+                        // Disabled removed from here
                         style={{
                           width: "18px",
                           height: "18px",
@@ -82,53 +84,19 @@ export default function ProductTable({
                         }}
                       />
                     </td>
-
                     <td style={{ width: "60px" }}>
-                      <div
-                        className="rounded border bg-white d-flex align-items-center justify-content-center"
-                        style={{
-                          width: "45px",
-                          height: "45px",
-                          overflow: "hidden",
-                        }}
-                      >
+                      <div className="rounded border bg-white d-flex align-items-center justify-content-center" style={{ width: "45px", height: "45px", overflow: "hidden" }}>
                         {p.imageUrl ? (
-                          <img
-                            src={p.imageUrl}
-                            alt={p.title}
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover",
-                            }}
-                          />
+                          <img src={p.imageUrl} alt={p.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                         ) : (
-                          <span
-                            className="text-muted"
-                            style={{ fontSize: "10px" }}
-                          >
-                            No Img
-                          </span>
+                          <span className="text-muted" style={{ fontSize: "10px" }}>No Img</span>
                         )}
                       </div>
                     </td>
-
                     <td>
                       <div className="d-flex flex-column py-1">
-                        <span
-                          className="fw-medium text-dark"
-                          style={{ fontSize: "14px", lineHeight: "1.2" }}
-                        >
-                          {p.title}
-                        </span>
-                        <p
-                          className="mb-0 text-muted"
-                          style={{
-                            fontSize: "11px",
-                            fontFamily: "monospace",
-                            marginTop: "2px",
-                          }}
-                        >
+                        <span className="fw-medium text-dark" style={{ fontSize: "14px", lineHeight: "1.2" }}>{p.title}</span>
+                        <p className="mb-0 text-muted" style={{ fontSize: "11px", fontFamily: "monospace", marginTop: "2px" }}>
                           SKU: {p.skuCode || "N/A"}
                         </p>
                       </div>
@@ -140,7 +108,7 @@ export default function ProductTable({
               {products.length === 0 && (
                 <tr>
                   <td colSpan={3} className="text-center py-4 text-muted small">
-                    No products found.
+                    {mode === "all" ? "No products found." : "Search or filter to customize pricing for specific products, If left unselected, global wholesale pricing applies."}
                   </td>
                 </tr>
               )}
@@ -149,21 +117,15 @@ export default function ProductTable({
         </div>
       </div>
 
-      {/* Footer with Selection Count */}
-      <div
-        className="card-footer bg-white border-top-1 py-3"
-        style={{ borderColor: "#f0f0f0" }}
-      >
+      <div className="card-footer bg-white border-top-1 py-3" style={{ borderColor: "#f0f0f0" }}>
         <div className="d-flex align-items-center">
           {visibleSelectedCount > 0 ? (
             <small className="text-muted fw-medium">
-              You've selected{" "}
-              <span className="text-dark fw-bold">{visibleSelectedCount}</span>{" "}
-              {visibleSelectedCount === 1 ? "Product" : "Products"}
+              You've selected <span className="text-dark fw-bold">{visibleSelectedCount}</span> {visibleSelectedCount === 1 ? "Product" : "Products"}
             </small>
           ) : (
             <small className="text-muted italic">
-              No products selected in current view
+              {mode === "all" ? "All products are currently selected" : "No product is selected."}
             </small>
           )}
         </div>
