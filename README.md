@@ -77,8 +77,8 @@ If extended further, I would implement:
 ##  Setup Instructions
 
 1. Prerequisites
-   Node.js v22.13.1 
-   npm 11.7.0
+* **Node.js:** v22.13.1
+* **npm:** v11.7.0
 
 2.  **Clone & Install:**
     ```bash
@@ -95,7 +95,7 @@ If extended further, I would implement:
     ```bash
     cd frontend
     npm install
-    npm start / npm run dev    # Runs on http://localhost:1512
+    npm start / npm run dev # Runs on http://localhost:1512
     ```
 
 ## Usage Examples
