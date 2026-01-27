@@ -50,6 +50,7 @@ Choose how you want to apply pricing by selecting one of the three modes:
 ### Backend
 * **Node.js & Express:** Providing a clean REST API for product data and pricing calculations.
 * **Swagger (OpenAPI 3.0):** Interactive API documentation available at `/api-docs`.
+* **In-memory Storage:** Used to keep the solution lightweight and aligned with challenge scope
 
 ---
 
@@ -66,29 +67,80 @@ Choose how you want to apply pricing by selecting one of the three modes:
 If extended further, I would implement:
 1.  **Persistence:** Migrate from in-memory storage to a MongoDB database.
 2.  **Customer Mapping:** Enable the ability to assign specific customers.
+3.  **Authentication & Authorization:** Supplier-based access control implemented using JWT based token
+4.  **Audit History:** Track pricing changes over time
+5.  **Bulk Profile Management:** Edit and compare multiple profiles
 
 
 ---
 
 ##  Setup Instructions
 
-1.  **Clone & Install:**
+1. Prerequisites
+   Node.js v22.13.1 
+   npm 11.7.0
+
+2.  **Clone & Install:**
     ```bash
     git clone (https://github.com/ravi1525ranjan/FOBOH-Interview-Fullstack-Pricing-Project.git)
 
     
-2.  **Open first terminal to Run Backend:**
+3.  **Open first terminal to Run Backend:**
     ```bash
     cd backend
     npm install
     npm start / npm run dev # Runs on http://localhost:4000
     ```
-3.  **Open second terminal to Run Frontend:**
+4.  **Open second terminal to Run Frontend:**
     ```bash
     cd frontend
     npm install
-    npm start / npm run dev    # Runs on http://localhost:5173
+    npm start / npm run dev    # Runs on http://localhost:1512
     ```
+
+## Usage Examples
+
+### Example 1: Fixed Price Increase (+$5)
+
+**Scenario:**  
+A supplier wants to add a flat $5 markup to selected products.
+
+**Steps:**
+1. Select **Multiple Products**
+2. Search or filter products
+3. Choose **Fixed Dollar ($)**
+4. Select **Increase (+)**
+5. Enter value `5` in the adjustment input field
+6. Prices update instantly in the New Price
+7. Review the New Price and save the profile
+
+**Result:**
+- Product A: $120.00 → $125.00
+- Product B: $85.00 → $90.00
+
+All unselected products remain at the global wholesale price.
+
+---
+
+### Example 2: Dynamic Discount (−10%)
+
+**Scenario:**  
+A supplier wants to offer a 10% discount for a customer.
+
+**Steps:**
+1. Select **Multiple Products**
+2. Filter by Category or Brand
+3. Choose **Percentage (%)**
+4. Select **Decrease (-)**
+5. Enter value `10` in the adjustment input field
+6. Prices update instantly in the New Price
+7. Review the New Price and save the profile
+
+**Result:**
+- Product A: $200.00 → $180.00
+- Product B: $150.00 → $135.00
+
+Only selected products receive the discount.
 
 ---
 **Final Note:** This project was built to simulate a real-world product feature, prioritizing clean data flow and a user-centric interface.

@@ -173,7 +173,7 @@ export default function PricingPage() {
             <h2 className="h4 mb-3 fw-bold">Basic Pricing Profile</h2>
             <div className="row g-4">
               <div className="col-md-6">
-                <label className="form-label fw-semibold small text-muted">
+                <label className="form-label fw-semibold small text-muted ms-1">
                   Profile Name
                 </label>
                 <input
