@@ -65,8 +65,8 @@ Choose how you want to apply pricing by selecting one of the three modes:
 
 If extended further, I would implement:
 1.  **Persistence:** Migrate from in-memory storage to a MongoDB database.
-3.  **Audit Logs:** A history of who modified pricing profiles for financial accountability.
-4.  **Bulk Upload:** Ability to upload CSV files to create pricing overrides.
+2.  **Customer Mapping:** Enable the ability to assign specific customers.
+
 
 ---
 
@@ -74,16 +74,20 @@ If extended further, I would implement:
 
 1.  **Clone & Install:**
     ```bash
-    git clone [https://github.com/your-username/foboh-pricing.git](https://github.com/your-username/foboh-pricing.git)
+    git clone (https://github.com/ravi1525ranjan/FOBOH-Interview-Fullstack-Pricing-Project.git)
+
+    
+2.  **Open first terminal to Run Backend:**
+    ```bash
+    cd backend
     npm install
+    npm start / npm run dev # Runs on http://localhost:4000
     ```
-2.  **Run Backend:**
+3.  **Open second terminal to Run Frontend:**
     ```bash
-    npm run server # Runs on http://localhost:4000
-    ```
-3.  **Run Frontend:**
-    ```bash
-    npm run dev    # Runs on http://localhost:5173
+    cd frontend
+    npm install
+    npm start / npm run dev    # Runs on http://localhost:5173
     ```
 
 ---

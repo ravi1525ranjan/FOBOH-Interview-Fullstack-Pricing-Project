@@ -11,7 +11,7 @@ type Props = {
 
 export default function ProductTable({
   products,
-  totalProductsCount,
+  // totalProductsCount,
   selected,
   onToggle,
   onToggleAll,
@@ -29,29 +29,31 @@ export default function ProductTable({
       className="card border-0 shadow-sm"
       style={{ backgroundColor: "ghostwhite" }}
     >
-      <div className="card-header bg-white border-bottom-0 pt-3 d-flex justify-content-between align-items-center">
-        <div className="d-flex align-items-center gap-2">
-          <h5 className="mb-0 fw-bold">Products</h5>
-          <span
-            className="badge rounded-pill bg-light text-muted border fw-normal"
-            style={{ fontSize: "12px" }}
-          >
-            {products.length} of {totalProductsCount}
-          </span>
-        </div>
-        <button
-          className={`btn btn-sm ${allSelected ? "btn-outline-secondary" : "btn-success"}`}
-          onClick={onToggleAll}
-          // Disabled removed from here
-          style={
-            !allSelected
-              ? { backgroundColor: "#26976C", borderColor: "#26976C" }
-              : {}
-          }
-        >
-          {allSelected ? "Unselect All" : "Select All"}
-        </button>
-      </div>
+<div className="card-header bg-white border-bottom-0 pt-3 d-flex justify-content-between align-items-center">
+  <div className="d-flex align-items-center gap-3">
+    <h5 className="mb-0 fw-bold">Products</h5>
+    <div 
+      className="px-3 py-1 rounded-pill bg-light border text-muted" 
+      style={{ fontSize: "12px" }}
+    >
+      {mode === "all" ? (
+        <span>Showing all <span className="text-dark fw-bold">{products.length}</span> products.</span>
+      ) : (
+        <span>
+          Showing <span className="text-dark fw-bold">{products.length}</span> {products.length === 1 ? "result" : "results"} based on your search and filters.
+        </span>
+      )}
+    </div>
+  </div>
+  
+  <button
+    className={`btn btn-sm ${allSelected ? "btn-outline-secondary" : (mode === "one" ? "btn-light text-muted" : "btn-success")}`}
+    onClick={onToggleAll}
+    style={!allSelected && mode !== "one" ? { backgroundColor: "#26976C", borderColor: "#26976C", color: 'white' } : {}}
+  >
+    {allSelected ? "Unselect All" : "Select All"}
+  </button>
+</div>
 
       <div className="card-body p-0">
         <div className="table-responsive">
@@ -73,7 +75,6 @@ export default function ProductTable({
                         type="checkbox"
                         checked={checked}
                         onChange={() => onToggle(p.id)}
-                        // Disabled removed from here
                         style={{
                           width: "18px",
                           height: "18px",
@@ -108,7 +109,7 @@ export default function ProductTable({
               {products.length === 0 && (
                 <tr>
                   <td colSpan={3} className="text-center py-4 text-muted small">
-                    {mode === "all" ? "No products found." : "Search or filter to customize pricing for specific products, If left unselected, global wholesale pricing applies."}
+                    {mode === "all" ? "No products found." : "Search or filter to customize pricing for specific products. If left unselected, global wholesale pricing applies."}
                   </td>
                 </tr>
               )}

@@ -9,7 +9,8 @@ type SelectionMode = "one" | "many" | "all";
 export default function PricingPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
-  const [mode, setMode] = useState<SelectionMode>("all"); 
+  const [mode, setMode] = useState<SelectionMode>("all");
+  const [selectionError, setSelectionError] = useState<string | null>(null); // New state for popup
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filters, setFilters] = useState({
@@ -23,6 +24,14 @@ export default function PricingPage() {
   useEffect(() => {
     fetchProducts().then(setProducts);
   }, []);
+
+  // Clear error message after 4 seconds
+  useEffect(() => {
+    if (selectionError) {
+      const timer = setTimeout(() => setSelectionError(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [selectionError]);
 
   const isFilterActive = useMemo(() => {
     return (
@@ -81,13 +90,24 @@ export default function PricingPage() {
   };
 
   const toggle = (id: string) => {
-    // Logic removed: User can now toggle even in "all" mode
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
+    setSelected((prev) => {
+      const isAlreadySelected = prev.includes(id);
+
+      // Rule: If Mode is 'One' and user tries to select a NEW second item
+      if (mode === "one" && !isAlreadySelected && prev.length >= 1) {
+        setSelectionError("You have selected 'One Product' selection type. To select multiple, please change the Selection Type above.");
+        return prev; // Do nothing
+      }
+
+      return isAlreadySelected ? prev.filter((x) => x !== id) : [...prev, id];
+    });
   };
 
   const toggleAll = () => {
+    if (mode === "one") {
+      setSelectionError("Bulk selection is not allowed in 'One Product' selection type mode.");
+      return;
+    }
     const allIds = selectableProducts.map((p) => p.id);
     const allSelected = allIds.every((id) => selected.includes(id));
     setSelected(allSelected ? [] : allIds);
@@ -100,6 +120,7 @@ export default function PricingPage() {
     } else {
       setSelected([]); 
     }
+    setSelectionError(null); // Clear errors when mode changes
   }, [mode, products]);
 
   const selectedProducts = useMemo(() => {
@@ -113,6 +134,17 @@ export default function PricingPage() {
     <div className="container-fluid py-4">
       <div className="card shadow-sm border-0" style={{ backgroundColor: "ghostwhite" }}>
         <div className="card-body p-4">
+          
+          {/* Error Message Popup */}
+          {selectionError && (
+            <div className="alert alert-danger border-0 shadow-sm d-flex align-items-center animate__animated animate__fadeInDown" 
+                 style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 9999, maxWidth: '400px' }}>
+              <i className="bi bi-exclamation-triangle-fill me-2"></i>
+              <small>{selectionError}</small>
+              <button type="button" className="btn-close ms-auto shadow-none" style={{ fontSize: '0.8rem' }} onClick={() => setSelectionError(null)}></button>
+            </div>
+          )}
+
           <div className="mb-4">
             <h2 className="h4 mb-3 fw-bold">Basic Pricing Profile</h2>
             <div className="row g-4">
@@ -155,7 +187,6 @@ export default function PricingPage() {
             </div>
           </div>
 
-          {/* Filters Section - Pointer events disabled but Table remains active */}
           <div className={`mb-4 ${mode === "all" ? "opacity-50" : ""}`} style={{ pointerEvents: mode === "all" ? "none" : "auto" }}>
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h5 className="h6 mb-0 fw-bold">Search & Filters</h5>
