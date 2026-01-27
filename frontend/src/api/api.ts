@@ -39,3 +39,17 @@ export async function previewPricing(payload: PricingPreviewPayload) {
     { productId: string; basePrice: number; newPrice: number }[]
   >;
 }
+
+export const fetchPricingProfiles = async () => {
+  const res = await fetch(`${API_BASE}/profiles`);
+  return res.json();
+};
+
+export const savePricingProfile = async (profileData: any) => {
+  const res = await fetch(`${API_BASE}/profiles`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(profileData),
+  });
+  return res.json();
+};

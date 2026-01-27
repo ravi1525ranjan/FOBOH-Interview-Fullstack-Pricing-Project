@@ -1,7 +1,7 @@
 export default function dashboardImpl(){
     return (
         <>
-        <p>Dashboard Implementation In Progres...!</p>
+        <p>Dashboard Implementation Is In Progres...!</p>
         </>
     )
 }

@@ -17,7 +17,7 @@ export default function Sidenav({ isCollapsed }: SidenavProps) {
       style={{ 
         width: isCollapsed ? '80px' : '240px', 
         minHeight: '100vh',
-        transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)', // Smoother transition
+        transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         overflowX: 'hidden',
         zIndex: 1000
       }}
@@ -47,9 +47,7 @@ export default function Sidenav({ isCollapsed }: SidenavProps) {
             }
             style={{ transition: 'all 0.2s ease' }}
           >
-            {/* Removed the 'filter-white' class and the inline 'invert' style 
-               to show your original icons as they are.
-            */}
+ 
             <img 
               src={`/src/assets/icons/${item.icon}.svg`} 
               width="20" 

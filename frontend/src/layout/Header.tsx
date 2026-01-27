@@ -58,7 +58,6 @@ export default function Header({ onToggleSidenav }: HeaderProps) {
           </h1>
         </div>
 
-        {/* RIGHT: Icons */}
         <div className="d-flex align-items-center gap-3">
           {/* Notification Button */}
           <div className="tooltip-container" data-tooltip="View Notifications">

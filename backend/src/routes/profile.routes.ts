@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { listAllProfiles, getSingleProfile, createNewProfile, removeProfile } from "../controllers/profile.controller";
+import { listAllProfiles, getSingleProfile, removeProfile, getProfiles, createProfile } from "../controllers/profile.controller";
 
 const router = Router();
 
-router.get("/", listAllProfiles);
-router.post("/", createNewProfile);
+// router.get("/", listAllProfiles);
 router.get("/:id", getSingleProfile);
 router.delete("/:id", removeProfile);
+router.post("/", createProfile);
+router.get("/", getProfiles);
 
 export default router;

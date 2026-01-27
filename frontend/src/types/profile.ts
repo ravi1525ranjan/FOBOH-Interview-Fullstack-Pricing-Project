@@ -6,6 +6,7 @@ export type PriceItem = {
   adjustmentType: AdjustmentType;
   incrementType: IncrementType;
   adjustmentValue: number;
+  adjustment: number;
 }
 
 export type PricingProfile = {

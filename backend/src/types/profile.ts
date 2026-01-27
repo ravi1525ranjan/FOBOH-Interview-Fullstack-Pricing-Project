@@ -17,3 +17,9 @@ export type PricingProfile = {
   items: PriceItem[];
   createdAt: string;
 };
+
+// export interface ProfileProductAdjustment {
+//   productId: string;
+//   adjustment: number;
+// }
+
