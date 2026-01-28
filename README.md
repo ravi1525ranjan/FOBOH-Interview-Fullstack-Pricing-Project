@@ -89,7 +89,7 @@ If extended further, I would implement:
     ```bash
     cd backend
     npm install
-    npm run dev | npm start # Runs on http://localhost:4000
+    npm run dev # Runs on http://localhost:4000
     ```
 4.  **Open second terminal to Run Frontend:**
     ```bash
