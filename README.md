@@ -43,7 +43,7 @@ Choose how you want to apply pricing by selecting one of the three modes:
 ##  Technical Stack & Architecture
 
 ### Frontend
-* **React (TypeScript):** For a type-safe, component-based UI.
+* **React 19 (TypeScript):** For a type-safe, component-based UI.
 * **Bootstrap 5:** For responsive styling and layout.
 * **State Management:** Lifted state logic to handle synchronization between the Sidebar, Header, and Table.
 
@@ -74,7 +74,43 @@ If extended further, I would implement:
 
 ---
 
-##  Setup Instructions
+## Production Deployment
+
+The application is fully deployed and can be accessed via the links below. 
+
+### Live Links
+* **Frontend (UI):** [https://foboh-interview-fullstack-pricing-p.vercel.app/](https://foboh-interview-fullstack-pricing-p.vercel.app/)
+* **Backend (API):** [https://foboh-interview-fullstack-pricing-project.onrender.com](https://foboh-interview-fullstack-pricing-project.onrender.com)
+
+### Deployment Stack
+* **Frontend Hosting:** [Vercel](https://vercel.com) (Optimized for Vite/React)
+* **Backend Hosting:** [Render](https://render.com) (Node.js Web Service)
+* **Database:** Local JSON-based persistent storage (simulated production environment)
+
+### Deployment Notes
+1.  **Cold Start:** The backend is hosted on a free-tier Render instance. If the application has been inactive, the server may "sleep." Please allow **30–50 seconds** for the initial request to wake the server.
+2.  **Environment Variables:** The frontend communicates with the production backend via the `VITE_API_URL` environment variable configured in Vercel.
+3.  **Routing:** A `vercel.json` configuration is included to handle client-side routing and prevent 404 errors on page refresh.
+
+### How to Deploy Locally (Alternative)
+If you prefer to run the production build locally:
+
+1.  **Backend:**
+    ```bash
+    cd backend
+    npm install
+    npm run build
+    node dist/server.js
+    ```
+2.  **Frontend:**
+    ```bash
+    cd frontend
+    npm install
+    npm run build
+    npm run preview
+    ```
+
+##  Local Development Setup
 
 1. Prerequisites
 * **Node.js:** v22.13.1
