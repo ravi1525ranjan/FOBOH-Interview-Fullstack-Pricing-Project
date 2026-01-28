@@ -62,24 +62,16 @@ export default function Header({ onToggleSidenav }: HeaderProps) {
           {/* Notification Button */}
           <div className="tooltip-container" data-tooltip="View Notifications">
             <button className="btn btn-link p-0 text-white opacity-75">
-              <img
-                src="/src/assets/icons/bell.svg"
-                width="20"
-                height="20"
-                alt="Notifications"
-              />
+              {/* UPDATED PATH */}
+              <img src="/bell.svg" width="20" height="20" alt="Notifications" />
             </button>
           </div>
 
           {/* Help Button */}
           <div className="tooltip-container" data-tooltip="Help & Support">
             <button className="btn btn-link p-0 text-white opacity-75">
-              <img
-                src="/src/assets/icons/help.svg"
-                width="20"
-                height="20"
-                alt="Help"
-              />
+              {/* UPDATED PATH */}
+              <img src="/help.svg" width="20" height="20" alt="Help" />
             </button>
           </div>
         </div>
