@@ -5,10 +5,12 @@
     "moduleResolution": "Node",
     "rootDir": "src",
     "outDir": "dist",
-    "esModuleInterop": true,
+
     "strict": true,
+    "esModuleInterop": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true
-  },
-  "include": ["src"]
+    "resolveJsonModule": true,
+
+    "types": ["node", "express"]
+  }
 }
