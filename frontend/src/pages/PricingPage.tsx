@@ -335,24 +335,27 @@ export default function PricingPage() {
               profileName={profileName}
             />
           </div>
-
           <div className="d-flex justify-content-end align-items-center gap-3 mt-5 pt-4 border-top">
             <button
-              className="btn btn-outline-secondary btn-sm rounded-pill px-4 fw-semibold"
-              style={{ fontSize: "13px" }}
+              className="btn btn-outline-secondary btn-sm rounded-pill px-4 fw-semibold custom-tooltip"
+              style={{ fontSize: "13px", position: "relative" }}
               onClick={handleBack}
+              data-tooltip="Implementation Coming Soon"
             >
               Back
             </button>
+
             <button
-              className="btn btn-success btn-sm rounded-pill px-4 fw-bold shadow-sm"
+              className="btn btn-success btn-sm rounded-pill px-4 fw-bold shadow-sm custom-tooltip"
               style={{
                 backgroundColor: "#26976C",
                 borderColor: "#26976C",
                 fontSize: "13px",
                 padding: "8px 24px",
+                position: "relative",
               }}
               onClick={handleNext}
+              data-tooltip="Implementation Coming Soon"
             >
               Next
             </button>

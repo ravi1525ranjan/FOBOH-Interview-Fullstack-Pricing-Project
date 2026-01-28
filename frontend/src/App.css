@@ -132,6 +132,34 @@ body {
   visibility: visible;
 }
 
+/* Instant Tooltip Logic */
+.custom-tooltip {
+  position: relative;
+}
+
+.custom-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%; /* Positions it above the button */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0s; /* This makes it instant */
+  z-index: 1000;
+}
+
+.custom-tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
   .page-container,
